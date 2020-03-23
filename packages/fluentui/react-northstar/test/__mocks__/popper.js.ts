@@ -1,8 +1,10 @@
-import * as PopperJs from 'popper.js';
+import * as PopperJs from '@popperjs/core';
+
+// TODO: Rename mock
 
 // Popper.js does not work with JSDOM: https://github.com/FezVrasta/popper.js/issues/478
 export default class Popper {
-  static placements = (PopperJs as any).placements;
+  static placements = placements;
 
   constructor() {
     return {
@@ -12,3 +14,4 @@ export default class Popper {
     };
   }
 }
+// TODO: => popper/core

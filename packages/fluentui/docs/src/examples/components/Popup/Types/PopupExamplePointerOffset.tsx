@@ -6,7 +6,7 @@ const PopupExamplePointerOffset = () => (
     <Popup
       align="center"
       position="above"
-      offset="20px"
+      offset={[20, 0]}
       pointing
       trigger={<Button>Click</Button>}
       content={

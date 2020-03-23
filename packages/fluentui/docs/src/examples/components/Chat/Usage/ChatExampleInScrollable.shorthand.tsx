@@ -45,8 +45,8 @@ const ChatExampleInScrollableShorthand = () => {
           position="above"
           trigger={<Component {...props} />}
           {...(overflow && {
-            flipBoundary: 'window',
-            overflowBoundary: 'window',
+            flipBoundary: document.body,
+            overflowBoundary: document.body,
           })}
         />
       ),

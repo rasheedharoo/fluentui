@@ -9,15 +9,15 @@ import { getElementType, useUnhandledProps, useAccessibility, useStyles, useTele
 import { useContextSelector } from '@fluentui/react-context-selector';
 import { Ref } from '@fluentui/react-component-ref';
 import * as customPropTypes from '@fluentui/react-proptypes';
+import * as PopperJs from '@popperjs/core';
 import cx from 'classnames';
 import * as _ from 'lodash';
-import PopperJs from 'popper.js';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 // @ts-ignore
 import { ThemeContext } from 'react-fela';
 
-import { Popper, PopperShorthandProps, getPopperPropsFromShorthand } from '../../utils/positioner';
+import { Popper, PopperShorthandProps, getPopperPropsFromShorthand, PopperModifiers } from '../../utils/positioner';
 import {
   childrenExist,
   createShorthandFactory,
@@ -234,29 +234,32 @@ const ChatMessage: React.FC<WithAsProp<ChatMessageProps>> &
     const messageRect: DOMRect | undefined = positionActionMenu && messageNode?.getBoundingClientRect();
     const overflowPadding: PopperJs.Padding = { top: Math.round(messageRect?.height || 0) };
 
+    const modifiers: PopperModifiers | undefined = positionActionMenu && [
+      // https://popper.js.org/docs/v2/modifiers/flip/
+      // Forces to flip only in "top-*" positions
+      { name: 'flip', options: { fallbackPlacements: ['top'] } },
+      {
+        name: 'preventOverflow',
+        options: {
+          // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
+          // Forces to stop prevent overflow on bottom and bottom
+          altAxis: true,
+          mainAxis: false,
+
+          // Is required to properly position action items
+          ...(overflow && {
+            boundary: menuRef.current.ownerDocument.body,
+            padding: overflowPadding,
+          }),
+        },
+      },
+    ];
+
     return (
       <Popper
         enabled={positionActionMenu}
         align="end"
-        modifiers={
-          positionActionMenu && {
-            // https://popper.js.org/popper-documentation.html#modifiers..flip.behavior
-            // Forces to flip only in "top-*" positions
-            flip: { behavior: ['top'] },
-            preventOverflow: {
-              escapeWithReference: false,
-              // https://popper.js.org/popper-documentation.html#modifiers..preventOverflow.priority
-              // Forces to stop prevent overflow on bottom and bottom
-              priority: ['left', 'right'],
-
-              // Is required to properly position action items
-              ...(overflow && {
-                boundariesElement: 'scrollParent',
-                padding: overflowPadding,
-              }),
-            },
-          }
-        }
+        modifiers={modifiers}
         position="above"
         positionFixed={overflow}
         targetRef={messageNode}
