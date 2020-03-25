@@ -37,6 +37,8 @@ export type ImageStrictProps<E extends React.ElementType> = ImageOwnProps<E> &
 
 export type ImageProps = ImageStrictProps<any>;
 
+export type ImageStylesProps = Pick<ImageProps, 'avatar' | 'circular' | 'fluid'>;
+
 /**
  * An Image is a graphic representation of something.
  *
