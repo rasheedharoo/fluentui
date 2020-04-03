@@ -95,7 +95,6 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
     }
 
     const handleUpdate = ({ state }: { state: Partial<PopperJs.State> }) => {
-      console.log(state);
       // PopperJS performs computations that might update the computed placement: auto positioning, flipping the
       // placement in case the popper box should be rendered at the edge of the viewport and does not fit
       if (state.placement !== latestPlacement.current) {
@@ -111,7 +110,7 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
       ? scrollParentElement !== scrollParentElement.ownerDocument.body
       : false;
     const hasPointer = !!(pointerTargetRef && pointerTargetRef.current);
-    console.log('hasScrollableElement', hasScrollableElement);
+
     const modifiers: PopperModifiers = [
       { name: 'flip', options: { flipVariations: true } },
 
