@@ -71,6 +71,8 @@ export type Alignment = 'top' | 'bottom' | 'start' | 'end' | 'center';
 
 export type PopperChildrenFn = (props: PopperChildrenProps) => React.ReactElement;
 
+export type Boundary = PopperJs.Boundary | 'scrollParent' | 'window';
+
 export interface PositioningProps {
   /**
    * Alignment for the component.
@@ -78,10 +80,10 @@ export interface PositioningProps {
   align?: Alignment;
 
   /** The element which will define the boundaries of the popper position for the flip behavior. */
-  flipBoundary?: PopperJs.Boundary;
+  flipBoundary?: Boundary;
 
   /** The element which will define the boundaries of the popper position for the overflow behavior. */
-  overflowBoundary?: PopperJs.Boundary;
+  overflowBoundary?: Boundary;
 
   /**
    * Position for the component. Position has higher priority than align. If position is vertical ('above' | 'below')
@@ -96,7 +98,11 @@ export interface PositioningProps {
    */
   positionFixed?: boolean;
 
-  // TODO
+  /**
+   * Lets you displace a popper element from its reference element.
+   * This can be useful if you need to apply some margin between them or if you need to fine tune the
+   * position according to some custom logic.
+   */
   offset?: OffsetModifier['options']['offset'];
 
   /**

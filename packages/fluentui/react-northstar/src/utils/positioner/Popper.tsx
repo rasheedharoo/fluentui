@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import isBrowser from '../isBrowser';
+import getBoundary from './getBoundary';
 import getScrollParent from './getScrollParent';
 import { getPlacement, applyRtlToOffset } from './positioningHelper';
 import { PopperModifiers, PopperProps } from './types';
@@ -63,22 +64,6 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
         name: 'offset',
         options: { offset: rtl ? applyRtlToOffset(offset) : offset },
       },
-
-      flipBoundary && {
-        name: 'flip',
-        options: {
-          altBoundary: true,
-          boundary: flipBoundary,
-        },
-      },
-      overflowBoundary && {
-        name: 'preventOverflow',
-        options: {
-          altBoundary: true,
-          boundary: overflowBoundary,
-        },
-      },
-
       ...userModifiers,
     ],
     [offset, flipBoundary, overflowBoundary, userModifiers],
@@ -137,6 +122,7 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
       strategy: positionFixed ? 'fixed' : 'absolute',
       modifiers: [
         ...(modifiers as PopperJs.Options['modifiers']),
+
         ...computedModifiers,
 
         /**
@@ -148,6 +134,21 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
           enabled: hasPointer,
           options: {
             element: pointerTargetRef && pointerTargetRef.current,
+          },
+        },
+
+        flipBoundary && {
+          name: 'flip',
+          options: {
+            altBoundary: true,
+            boundary: getBoundary(contentRef.current, flipBoundary),
+          },
+        },
+        overflowBoundary && {
+          name: 'preventOverflow',
+          options: {
+            altBoundary: true,
+            boundary: getBoundary(contentRef.current, overflowBoundary),
           },
         },
 

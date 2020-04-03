@@ -568,13 +568,12 @@ Popup.propTypes = {
   flipBoundary: PropTypes.oneOfType([
     PropTypes.object as PropTypes.Requireable<HTMLElement>,
     PropTypes.arrayOf(PropTypes.object) as PropTypes.Requireable<HTMLElement[]>,
-    PropTypes.oneOf<'clippingParents'>(['clippingParents']),
+    PropTypes.oneOf<'clippingParents' | 'window' | 'scrollParent'>(['clippingParents', 'window', 'scrollParent']),
   ]),
   overflowBoundary: PropTypes.oneOfType([
     PropTypes.object as PropTypes.Requireable<HTMLElement>,
     PropTypes.arrayOf(PropTypes.object) as PropTypes.Requireable<HTMLElement[]>,
-    PropTypes.oneOf<'clippingParents'>(['clippingParents']),
-    PropTypes.oneOf<'clippingParents'>(['clippingParents']),
+    PropTypes.oneOf<'clippingParents' | 'window' | 'scrollParent'>(['clippingParents', 'window', 'scrollParent']),
   ]),
   on: PropTypes.oneOfType([
     PropTypes.oneOf(['hover', 'click', 'focus', 'context']),

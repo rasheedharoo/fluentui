@@ -43,6 +43,7 @@ import Text, { TextProps } from '../Text/Text';
 import Reaction, { ReactionProps } from '../Reaction/Reaction';
 import { ReactionGroupProps } from '../Reaction/ReactionGroup';
 import { ChatItemContext } from './chatItemContext';
+import getScrollParent from 'src/utils/positioner/getScrollParent';
 
 export interface ChatMessageSlotClassNames {
   actionMenu: string;
@@ -233,6 +234,10 @@ const ChatMessage: React.FC<WithAsProp<ChatMessageProps>> &
       // https://popper.js.org/docs/v2/modifiers/flip/
       // Forces to flip only in "top-*" positions
       { name: 'flip', options: { fallbackPlacements: ['top'] } },
+      overflow && {
+        name: 'preventOverflow',
+        options: { boundary: getScrollParent(messageNode) },
+      },
     ];
 
     return (

@@ -3,7 +3,7 @@ import { Avatar, Chat, ChatMessageProps, ChatProps, MenuButton } from '@fluentui
 import * as React from 'react';
 
 const ChatExampleInScrollableShorthand = () => {
-  const [actionCount] = useRangeKnob({ name: 'actionCount', initialValue: 7, min: 1, max: 10 });
+  const [actionCount, setActionCount] = useRangeKnob({ name: 'actionCount', initialValue: 7, min: 1, max: 10 });
   const [overflow] = useBooleanKnob({ name: 'overflow', initialValue: true });
   const [height] = useRangeKnob({
     name: 'height',
@@ -45,8 +45,8 @@ const ChatExampleInScrollableShorthand = () => {
           position="above"
           trigger={<Component {...props} />}
           {...(overflow && {
-            flipBoundary: document.documentElement,
-            overflowBoundary: document.documentElement,
+            flipBoundary: 'window',
+            overflowBoundary: 'window',
           })}
         />
       ),
@@ -180,9 +180,15 @@ const ChatExampleInScrollableShorthand = () => {
   ];
 
   return (
-    <div style={{ height, width, overflow: 'scroll', margin: 150, marginLeft: 0 }}>
-      <Chat items={items} styles={{ minHeight: '100%' }} />
-    </div>
+    <>
+      <div style={{ height, width, overflow: 'scroll', margin: 150, marginBottom: 0, marginLeft: 50 }}>
+        <Chat items={items} styles={{ minHeight: '100%' }} />
+      </div>
+
+      <button id="actions-to-max" onClick={() => setActionCount(actionItems.length)}>
+        Set action count to max
+      </button>
+    </>
   );
 };
 
