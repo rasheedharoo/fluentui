@@ -450,7 +450,7 @@ class Toolbar extends UIComponent<WithAsProp<ToolbarProps>> {
             icon: { name: 'more', outline: true },
           }),
           overrideProps: {
-            menu: this.props.overflowOpen ? this.getOverflowItems() : [],
+            menu: { items: this.props.overflowOpen ? this.getOverflowItems() : [], popper: { positionFixed: true } },
             menuOpen: this.props.overflowOpen,
             onMenuOpenChange: (e, { menuOpen }) => {
               _.invoke(this.props, 'onOverflowOpenChange', e, {
