@@ -9,7 +9,6 @@ import { getElementType, useUnhandledProps, useAccessibility, useStyles, useTele
 import { useContextSelector } from '@fluentui/react-context-selector';
 import { Ref } from '@fluentui/react-component-ref';
 import * as customPropTypes from '@fluentui/react-proptypes';
-import * as PopperJs from '@popperjs/core';
 import cx from 'classnames';
 import * as _ from 'lodash';
 import * as PropTypes from 'prop-types';
@@ -155,7 +154,6 @@ const ChatMessage: React.FC<WithAsProp<ChatMessageProps>> &
   const [focused, setFocused] = React.useState<boolean>(false);
   const [messageNode, setMessageNode] = React.useState<HTMLElement | null>(null);
 
-  const menuRef = React.useRef<HTMLElement>();
   const updateActionsMenuPosition = React.useRef<(() => void) | null>(null);
 
   const getA11Props = useAccessibility(accessibility, {
@@ -231,28 +229,10 @@ const ChatMessage: React.FC<WithAsProp<ChatMessageProps>> &
       return actionMenuElement;
     }
 
-    const messageRect: DOMRect | undefined = positionActionMenu && messageNode?.getBoundingClientRect();
-    const overflowPadding: PopperJs.Padding = { top: Math.round(messageRect?.height || 0) };
-
     const modifiers: PopperModifiers | undefined = positionActionMenu && [
       // https://popper.js.org/docs/v2/modifiers/flip/
       // Forces to flip only in "top-*" positions
       { name: 'flip', options: { fallbackPlacements: ['top'] } },
-      {
-        name: 'preventOverflow',
-        options: {
-          // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
-          // Forces to stop prevent overflow on bottom and bottom
-          altAxis: true,
-          mainAxis: false,
-
-          // Is required to properly position action items
-          ...(overflow && {
-            boundary: menuRef.current.ownerDocument.body,
-            padding: overflowPadding,
-          }),
-        },
-      },
     ];
 
     return (
@@ -268,7 +248,7 @@ const ChatMessage: React.FC<WithAsProp<ChatMessageProps>> &
         {({ scheduleUpdate }) => {
           updateActionsMenuPosition.current = scheduleUpdate;
 
-          return <Ref innerRef={menuRef}>{actionMenuElement}</Ref>;
+          return actionMenuElement;
         }}
       </Popper>
     );

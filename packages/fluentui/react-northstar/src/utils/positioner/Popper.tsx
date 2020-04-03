@@ -57,30 +57,63 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
   const latestPlacement = React.useRef<PopperJs.Placement>(proposedPlacement);
   const [computedPlacement, setComputedPlacement] = React.useState<PopperJs.Placement>(proposedPlacement);
 
-  const hasDocument = isBrowser();
-  const hasScrollableElement = React.useMemo(() => {
-    if (hasDocument) {
-      const scrollParentElement = getScrollParent(contentRef.current);
-
-      return scrollParentElement !== scrollParentElement.ownerDocument.body;
-    }
-
-    return false;
-  }, [contentRef, hasDocument]);
-  // Is a broken dependency and can cause potential bugs, we should rethink this as all other refs
-  // in this component.
-
   const computedModifiers = useDeepMemo<any, PopperModifiers>(
     () => [
-      { name: 'flip', options: { flipVariations: true } },
-
       offset && {
         name: 'offset',
         options: { offset: rtl ? applyRtlToOffset(offset) : offset },
       },
 
-      flipBoundary && { name: 'flip', options: { boundary: flipBoundary } },
-      overflowBoundary && { name: 'preventOverflow', options: { boundary: overflowBoundary } },
+      flipBoundary && {
+        name: 'flip',
+        options: {
+          altBoundary: true,
+          boundary: flipBoundary,
+        },
+      },
+      overflowBoundary && {
+        name: 'preventOverflow',
+        options: {
+          altBoundary: true,
+          boundary: overflowBoundary,
+        },
+      },
+
+      ...userModifiers,
+    ],
+    [offset, flipBoundary, overflowBoundary, userModifiers],
+  );
+
+  const createInstance = React.useCallback(() => {
+    const reference: Element | PopperJs.VirtualElement =
+      targetRef && isRefObject(targetRef)
+        ? (targetRef as React.RefObject<Element>).current
+        : (targetRef as PopperJs.VirtualElement);
+
+    if (!enabled || !reference || !contentRef.current) {
+      return;
+    }
+
+    const handleUpdate = ({ state }: { state: Partial<PopperJs.State> }) => {
+      console.log(state);
+      // PopperJS performs computations that might update the computed placement: auto positioning, flipping the
+      // placement in case the popper box should be rendered at the edge of the viewport and does not fit
+      if (state.placement !== latestPlacement.current) {
+        latestPlacement.current = state.placement;
+        setComputedPlacement(state.placement);
+      }
+    };
+
+    const hasDocument = isBrowser();
+    const scrollParentElement: Node | null = hasDocument ? getScrollParent(contentRef.current) : null;
+
+    const hasScrollableElement = scrollParentElement
+      ? scrollParentElement !== scrollParentElement.ownerDocument.body
+      : false;
+    const hasPointer = !!(pointerTargetRef && pointerTargetRef.current);
+    console.log('hasScrollableElement', hasScrollableElement);
+    const modifiers: PopperModifiers = [
+      { name: 'flip', options: { flipVariations: true } },
 
       /**
        * unstable_pinned disables the flip modifier by setting flip.enabled to false; this
@@ -97,38 +130,15 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
        * scroll targetRef out of the viewport.
        */
       hasScrollableElement && { name: 'flip', options: { boundary: 'clippingParents' } },
-
-      ...userModifiers,
-    ],
-    [flipBoundary, hasScrollableElement, offset, overflowBoundary, userModifiers],
-  );
-
-  const createInstance = React.useCallback(() => {
-    const reference: Element | PopperJs.VirtualElement =
-      targetRef && isRefObject(targetRef)
-        ? (targetRef as React.RefObject<Element>).current
-        : (targetRef as PopperJs.VirtualElement);
-
-    if (!enabled || !reference || !contentRef.current) {
-      return;
-    }
-
-    const handleUpdate = ({ state }: { state: Partial<PopperJs.State> }) => {
-      // PopperJS performs computations that might update the computed placement: auto positioning, flipping the
-      // placement in case the popper box should be rendered at the edge of the viewport and does not fit
-      if (state.placement !== latestPlacement.current) {
-        latestPlacement.current = state.placement;
-        setComputedPlacement(state.placement);
-      }
-    };
-
-    const hasPointer = !!(pointerTargetRef && pointerTargetRef.current);
+      hasScrollableElement && { name: 'preventOverflow', options: { boundary: 'clippingParents' } },
+    ];
 
     const options: PopperJs.Options = {
       placement: proposedPlacement,
       strategy: positionFixed ? 'fixed' : 'absolute',
       modifiers: [
-        ...(computedModifiers as PopperJs.Options['modifiers']),
+        ...(modifiers as PopperJs.Options['modifiers']),
+        ...computedModifiers,
 
         /**
          * This modifier is necessary in order to render the pointer. Refs are resolved in effects, so it can't be
@@ -153,7 +163,7 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
     };
 
     popperRef.current = PopperJs.createPopper(reference, contentRef.current, options);
-  }, [computedModifiers, contentRef, enabled, pointerTargetRef, positionFixed, proposedPlacement, targetRef]);
+  }, [contentRef, computedModifiers, enabled, pointerTargetRef, positionFixed, proposedPlacement, targetRef]);
 
   const destroyInstance = React.useCallback(() => {
     if (popperRef.current) {

@@ -1,7 +1,5 @@
 import * as PopperJs from '@popperjs/core';
 import * as React from 'react';
-import { Rect } from '@popperjs/core/lib/types';
-import { Placement } from '@popperjs/core/lib/enums';
 
 // Temporary typings for modifiers
 
@@ -10,6 +8,14 @@ type ModifierProps<Name, Options> = {
   name: Name;
   options?: Options;
 };
+
+export type ArrowModifier = ModifierProps<
+  'arrow',
+  Partial<{
+    element: HTMLElement | string;
+    padding: PopperJs.Padding;
+  }>
+>;
 
 export type FlipModifier = ModifierProps<
   'flip',
@@ -24,9 +30,9 @@ export type FlipModifier = ModifierProps<
 >;
 
 export type OffsetFunctionParam = {
-  popper: Rect;
-  reference: Rect;
-  placement: Placement;
+  popper: PopperJs.Rect;
+  reference: PopperJs.Rect;
+  placement: PopperJs.Placement;
 };
 
 declare type OffsetFunction = (param: OffsetFunctionParam) => [number | null | undefined, number | null | undefined];
@@ -58,7 +64,7 @@ export type PreventOverflowModifier = ModifierProps<
   }>
 >;
 
-export type PopperModifiers = (FlipModifier | OffsetModifier | PreventOverflowModifier)[];
+export type PopperModifiers = (ArrowModifier | FlipModifier | OffsetModifier | PreventOverflowModifier)[];
 
 export type Position = 'above' | 'below' | 'before' | 'after';
 export type Alignment = 'top' | 'bottom' | 'start' | 'end' | 'center';

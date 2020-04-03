@@ -31,11 +31,11 @@ const ChatExampleInScrollableShorthand = () => {
     { key: 'edit', icon: 'edit', title: 'Edit' },
     { key: 'lock', icon: 'lock', title: 'Lock' },
     {
-      key: 'more',
       icon: 'more',
       title: 'More actions',
       children: (Component, props) => (
         <MenuButton
+          key="more"
           menu={[
             { key: 'reply', content: 'Reply', icon: 'reply' },
             { key: 'edit', content: 'Edit', icon: 'edit' },
@@ -45,8 +45,8 @@ const ChatExampleInScrollableShorthand = () => {
           position="above"
           trigger={<Component {...props} />}
           {...(overflow && {
-            flipBoundary: document.body,
-            overflowBoundary: document.body,
+            flipBoundary: document.documentElement,
+            overflowBoundary: document.documentElement,
           })}
         />
       ),
