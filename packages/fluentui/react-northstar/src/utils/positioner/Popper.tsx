@@ -6,7 +6,7 @@ import * as React from 'react';
 
 import isBrowser from '../isBrowser';
 import getScrollParent from './getScrollParent';
-import { getPlacement } from './positioningHelper';
+import { getPlacement, applyRtlToOffset } from './positioningHelper';
 import { PopperModifiers, PopperProps } from './types';
 
 /**
@@ -76,7 +76,7 @@ const Popper: React.FunctionComponent<PopperProps> = props => {
 
       offset && {
         name: 'offset',
-        options: { offset: rtl ? offset /* TODO */ : offset },
+        options: { offset: rtl ? applyRtlToOffset(offset) : offset },
       },
 
       flipBoundary && { name: 'flip', options: { boundary: flipBoundary } },

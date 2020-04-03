@@ -23,13 +23,15 @@ export type FlipModifier = ModifierProps<
   }>
 >;
 
-declare type OffsetsFunction = (param: {
+export type OffsetFunctionParam = {
   popper: Rect;
   reference: Rect;
   placement: Placement;
-}) => [number | null | undefined, number | null | undefined];
+};
 
-declare type Offset = OffsetsFunction | [number | null | undefined, number | null | undefined];
+declare type OffsetFunction = (param: OffsetFunctionParam) => [number | null | undefined, number | null | undefined];
+
+declare type Offset = OffsetFunction | [number | null | undefined, number | null | undefined];
 
 export type OffsetModifier = ModifierProps<
   'offset',
